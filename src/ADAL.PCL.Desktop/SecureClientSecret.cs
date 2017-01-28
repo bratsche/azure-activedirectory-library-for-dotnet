@@ -25,37 +25,56 @@
 //
 //------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Security;
+
 namespace Microsoft.IdentityService.Clients.ActiveDirectory
 {
     /// <summary>
-    /// Indicates whether AcquireToken should automatically prompt only if necessary or whether
-    /// it should prompt regardless of whether there is a cached token.
+    /// This class allows to pass client secret as a SecureString to the API.
     /// </summary>
-    public enum PromptBehavior
+    public class SecureClientSecret : ISecureClientSecret
     {
-        /// <summary>
-        /// Acquire token will prompt the user for credentials only when necessary.  If a token
-        /// that meets the requirements is already cached then the user will not be prompted.
-        /// </summary>
-        Auto,
+        private SecureString secureString;
 
         /// <summary>
-        /// The user will be prompted for credentials even if there is a token that meets the requirements
-        /// already in the cache.
+        /// Required Constructor
         /// </summary>
-        Always,
+        /// <param name="secret">SecureString secret. Required and cannot be null.</param>
+        public SecureClientSecret(SecureString secret)
+        {
+            if (secret == null)
+            {
+                throw new ArgumentNullException(nameof(secret));
+            }
 
+            this.secureString = secret;
+        }
+        
         /// <summary>
-        /// The user will not be prompted for credentials.  If prompting is necessary then the AcquireToken request
-        /// will fail.
+        /// Applies the secret to the dictionary.
         /// </summary>
-        Never,
+        /// <param name="parameters">Dictionary to which the securestring is applied to be sent to server</param>
+        public void ApplyTo(IDictionary<string, string> parameters)
+        {
+            var output = new char[secureString.Length];
+            IntPtr secureStringPtr = Marshal.SecureStringToCoTaskMemUnicode(secureString);
+            for (int i = 0; i < secureString.Length; i++)
+            {
+                output[i] = (char) Marshal.ReadInt16(secureStringPtr, i*2);
+            }
 
-        /// <summary>
-        /// Re-authorizes (through displaying webview) the resource usage, making sure that the resulting access
-        /// token contains updated claims. If user logon cookies are available, the user will not be asked for 
-        /// credentials again and the logon dialog will dismiss automatically.
-        /// </summary>
-        RefreshSession
+            Marshal.ZeroFreeCoTaskMemUnicode(secureStringPtr);
+            parameters[OAuthParameter.ClientSecret] = new string(output);
+
+            if (secureString != null && !secureString.IsReadOnly())
+            {
+                secureString.Clear();
+            }
+
+            secureString = null;
+        }
     }
 }

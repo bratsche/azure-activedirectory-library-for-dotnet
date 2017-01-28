@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//----------------------------------------------------------------------
 //
 // Copyright (c) Microsoft Corporation.
 // All rights reserved.
@@ -25,31 +25,42 @@
 //
 //------------------------------------------------------------------------------
 
-using AppKit;
-
 namespace Microsoft.IdentityService.Clients.ActiveDirectory
 {
     /// <summary>
-    /// Additional parameters used in acquiring user's authorization
+    /// Indicates whether AcquireToken should automatically prompt only if necessary or whether
+    /// it should prompt regardless of whether there is a cached token.
     /// </summary>
-    public class PlatformParameters : IPlatformParameters
+    public enum PromptBehavior
     {
-        private PlatformParameters()
-        {
-        }
+        /// <summary>
+        /// Acquire token will prompt the user for credentials only when necessary.  If a token
+        /// that meets the requirements is already cached then the user will not be prompted.
+        /// </summary>
+        Auto,
 
         /// <summary>
-        /// Additional parameters used in acquiring user's authorization
+        /// The user will be prompted for credentials even if there is a token that meets the requirements
+        /// already in the cache.
         /// </summary>
-        /// <param name="callerWindow">NSWindow instance</param>
-        public PlatformParameters(NSWindow callerWindow):this()
-        {
-            this.CallerWindow = callerWindow;
-        }
+        Always,
 
         /// <summary>
-        /// Caller NSWindow
+        /// The user will not be prompted for credentials.  If prompting is necessary then the AcquireToken request
+        /// will fail.
         /// </summary>
-        public NSWindow CallerWindow { get; private set; }
+        Never,
+
+        /// <summary>
+        /// Re-authorizes (through displaying webview) the resource usage, making sure that the resulting access
+        /// token contains updated claims. If user logon cookies are available, the user will not be asked for 
+        /// credentials again and the logon dialog will dismiss automatically.
+        /// </summary>
+        RefreshSession,
+
+        /// <summary>
+        /// The user will be prompted to select an account or sign in a a new account.
+        /// </summary>
+        SelectAccount
     }
 }
