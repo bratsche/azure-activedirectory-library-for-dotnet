@@ -29,6 +29,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.IdentityService.Clients.ActiveDirectory;
+
 namespace Microsoft.IdentityService.Clients.ActiveDirectory
 {
     internal class WebUI : IWebUI
@@ -64,6 +66,17 @@ namespace Microsoft.IdentityService.Clients.ActiveDirectory
         {
             try
             {
+#if MAC
+                this.parameters.CallerWindow.InvokeOnMainThread(() =>
+                {
+                    AuthenticationAgentWindowController.Run(
+                        authorizationUri.AbsoluteUri,
+                        redirectUri.OriginalString,
+                        CallbackMethod,
+                        parameters.CallerWindow
+                    );
+                });
+#else
                 this.parameters.CallerViewController.InvokeOnMainThread(() =>
                 {
                     var navigationController =
@@ -71,6 +84,7 @@ namespace Microsoft.IdentityService.Clients.ActiveDirectory
                             redirectUri.OriginalString, CallbackMethod);
                     this.parameters.CallerViewController.PresentViewController(navigationController, false, null);
                 });
+#endif
             }
             catch (Exception ex)
             {
