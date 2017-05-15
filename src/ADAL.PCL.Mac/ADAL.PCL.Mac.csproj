@@ -101,6 +101,9 @@
       <Link>TokenCachePlugin.cs</Link>
     </Compile>
     <Compile Include="EphemeralCookieStore.cs" />
+    <Compile Include="..\ADAL.PCL.CoreCLR\WebProxyProvider.cs">
+      <Link>WebProxyProvider.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ADAL.PCL\ADAL.PCL.csproj">

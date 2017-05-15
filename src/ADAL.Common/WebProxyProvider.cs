@@ -25,23 +25,15 @@
 //
 //------------------------------------------------------------------------------
 
-namespace Microsoft.IdentityService.Clients.ActiveDirectory
-{
-    internal static class AdalInitializer
-    {
-        public static void Initialize()
-        {
-            PlatformPluginSwitch.DynamicallyLinkAssembly = false;
+using System.Net;
 
-            PlatformPlugin.InjectDependecies(
-                new WebUIFactory(),
-                new TokenCachePlugin(),
-                new Logger(),
-                new PlatformInformation(),
-                new CryptographyHelper(),
-                new DeviceAuthHelper(),
-                new BrokerHelper(),
-                new WebProxyProvider());
+namespace Microsoft.IdentityModel.Clients.ActiveDirectory
+{
+    internal class WebProxyProvider : IWebProxyProvider
+    {
+        public IWebProxy GetDefaultWebProxy()
+        {
+            return WebRequest.DefaultWebProxy;
         }
     }
 }
