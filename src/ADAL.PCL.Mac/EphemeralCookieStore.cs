@@ -92,7 +92,7 @@ namespace Microsoft.IdentityService.Clients.ActiveDirectory
 
         public void GiveCookies(NSMutableUrlRequest request)
         {
-            request.ShouldHandleCookies = false;
+            request.ShouldHandleCookies = true;
             var cookies = GetStoredCookiesForUrl(request.Url).ToArray();
             var headers = NSHttpCookie.RequestHeaderFieldsWithCookies(cookies);
             var mutableHeaders = (NSMutableDictionary)request.Headers.MutableCopy();
